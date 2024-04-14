@@ -1,0 +1,145 @@
+---
+title: "hw8"
+author: "NAUMI RASHA"
+date: "2024-04-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(plyr);library(dplyr)
+library(stargazer)
+```
+```{r}
+
+load("/Users/naumirasha/Downloads/Household_Pulse_data_ph4c2.RData")
+```
+```{r}
+Household_Pulse_data$dep_K1217 <- fct_recode(Household_Pulse_data$KIDS_12_17Y,
+                        "1" = "Yes children 12 - 17 in HH",
+                        "0" = "NA")
+```
+```{r}
+Household_Pulse_data$dep_K1217 <- as.numeric(levels(Household_Pulse_data$dep_K1217))[Household_Pulse_data$dep_K1217]
+```
+```{r}
+summary(Household_Pulse_data$dep_K1217)
+```
+```{r}
+Household_Pulse_data$dep_Hispan <- fct_recode(Household_Pulse_data$RHISPANIC,
+                        "1" = "Hispanic", 
+                        "0" = "Not Hispanic")
+```
+```{r}
+Household_Pulse_data$dep_Hispan <- as.numeric(levels(Household_Pulse_data$dep_Hispan))[Household_Pulse_data$dep_Hispan]
+
+summary(Household_Pulse_data$dep_Hispan)
+```
+```{r}
+Household_Pulse_data$dep_Race <- fct_recode(Household_Pulse_data$RRACE,
+                        "4" = "White",
+                        "3" = "Black",
+                        "2" = "Asian",
+                        "1" = "Other")
+```
+```{r}
+Household_Pulse_data$dep_Race <- as.numeric(levels(Household_Pulse_data$dep_Race))[Household_Pulse_data$dep_Race]
+
+summary(Household_Pulse_data$dep_Race)
+```
+```{r}
+Household_Pulse_data$dep_Anx <- fct_recode(Household_Pulse_data$ANXIOUS,
+                                           "5" = "nearly every day worry",
+                                           "4" = "more than half the days worried over past 2 wks",
+                                           "3" = "several days worried over past 2 wks",
+                                           "2" = "no worry over past 2 wks",
+                                           "1" = "NA")
+Household_Pulse_data$dep_Anx <- as.numeric(levels(Household_Pulse_data$dep_Anx))[Household_Pulse_data$dep_Anx]
+
+Household_Pulse_data$dep_Anx
+```
+
+```{r}
+Household_Pulse_data$dep_MN <- fct_recode(Household_Pulse_data$MHLTH_NEED,
+                                          "4" = "all children need mental health treatment",
+                                          "3" = "some but not all children",
+                                          "2" = "no, none of the children",
+                                          "1" = "NA")
+Household_Pulse_data$dep_MN <- as.numeric(levels(Household_Pulse_data$dep_MN))[Household_Pulse_data$dep_MN]
+
+summary(Household_Pulse_data$dep_MN)
+```
+```{r}
+Household_Pulse_data$dep_soc <- fct_recode(Household_Pulse_data$SOCIAL1,
+                                          "6" = "always get social emotional support",
+                                          "5" = "usually",
+                                          "4" = "sometimes",
+                                          "3" = "rarely",
+                                          "2" = "never",
+                                          "1" = "NA")
+Household_Pulse_data$dep_soc <- as.numeric(levels(Household_Pulse_data$dep_soc))[Household_Pulse_data$dep_soc]
+
+summary(Household_Pulse_data$dep_soc)
+```
+```{r}
+Household_Pulse_data$income_midpoint <- fct_recode(Household_Pulse_data$INCOME, 
+                                "210000" = "HH income $200k +",
+                                "170000" = "HH income $150 - 199",
+                                "125000" = "HH income $100k - 149",
+                                "85000" = "HH income $75 - 99.9",
+                                "65000" = "HH income $50k - 74.9",
+                                "42000" = "HH income $35k - 49.9",
+                                "29000" = "HH income $25k - $34.9k",
+                                "20000" = "HH income less than $25k", 
+                                "0" = "NA")
+Household_Pulse_data$income_midpoint <- as.numeric(levels(Household_Pulse_data$income_midpoint))[Household_Pulse_data$income_midpoint]
+
+ summary(Household_Pulse_data$income_midpoint)
+```
+```{r}
+model_h <- lm(Household_Pulse_data ~ dep_MN + dep_Anx + dep_soc, data = Household_Pulse_data)
+summary(model_h)
+```
+```{r}
+model_h2 <- lm(Household_Pulse_data ~ dep_Race + dep_Hispan + dep_K1217 + income_midpoint, data = Household_Pulse_data)
+summary(model_h2)
+```
+
+
+```{r}
+model_h3 <- lm(Household_Pulse_data ~ income_midpoint*(dep_Race + dep_Hispan) + (dep_MN + dep_Anx)
+summary(model_h3)
+
+anova(model_h, model_h2, model_h3)
+```
+
+
+```{r}
+model_h4 <- glm(Household_Pulse_data ~ income_midpoint*(dep_Race + dep_Hispan) + (dep_MN + dep_Anx, data = Household_Pulse_data, family = binomial)
+```
+```
+
